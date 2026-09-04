@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% from "includes/user_edit_modal.html" import user_edit_modal %}
+
+{% block title %}لوحة تحكم المشرف العام{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="mt-4"><i class="fas fa-user-shield me-2"></i> لوحة تحكم المشرف العام</h1>
+<p class="lead">مرحباً بك مشرف {{ current_user.full_name }}! يمكنك إدارة جميع المستخدمين وتقارير النظام.</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="student-tab" data-bs-toggle="tab" data-bs-target="#student-pane"
+            type="button" role="tab">إدارة الطلاب ({{ students|length }})</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff-pane" type="button"
+            role="tab">إدارة الطاقم ({{ doctors|length + assistants|length }})</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="add-user-tab" data-bs-toggle="tab" data-bs-target="#add-user-pane" type="button"
+            role="tab">إضافة حساب طاقم</button>
+    </li>
+</ul>
+
+<div class="tab-content pt-3" id="myTabContent">
+
+    <!-- Students Tab -->
+    <div class="tab-pane fade show active" id="student-pane" role="tabpanel">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الإيميل</th>
+                                <th>القسم</th>
+                                <th>السنة</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in students %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('report_student_route', student_id=user.id) }}">{{
+                                        user.full_name }}</a>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.department.name if user.department else 'N/A' }}</td>
+                                <td>{{ user.year.name if user.year else 'N/A' }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                    <span class="badge bg-success">نشط</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">محظور</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                        data-bs-target="#editUserModal-{{ user.id }}">تعديل</button>
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='delete') }}"
+                                        class="btn btn-sm btn-danger" onclick="return confirm('حذف؟')">حذف</a>
+                                    {% if user.is_active %}
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='ban') }}"
+                                        class="btn btn-sm btn-warning">حظر</a>
+                                    {% else %}
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='unban') }}"
+                                        class="btn btn-sm btn-success">فك الحظر</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {{ user_edit_modal(user, departments, years, sections) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Tab -->
+    <div class="tab-pane fade" id="staff-pane" role="tabpanel">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الإيميل</th>
+                                <th>الدور</th>
+                                <th>المادة/المشرف</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in doctors + assistants %}
+                            <tr>
+                                <td>{{ user.full_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.role == 3 %}
+                                    <span class="badge bg-primary">دكتور</span>
+                                    {% elif user.role == 2 %}
+                                    <span class="badge bg-info">معيد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.role == 3 %}
+                                    {{ user.course_name if user.course_name else 'N/A' }} ({{ user.department.name if
+                                    user.department else 'N/A' }})
+                                    {% elif user.role == 2 %}
+                                    مشرف: {{ user.supervisor.full_name if user.supervisor else 'N/A' }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_active %}
+                                    <span class="badge bg-success">نشط</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">محظور</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                        data-bs-target="#editUserModal-{{ user.id }}">تعديل</button>
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='delete') }}"
+                                        class="btn btn-sm btn-danger" onclick="return confirm('حذف؟')">حذف</a>
+                                    {% if user.is_active %}
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='ban') }}"
+                                        class="btn btn-sm btn-warning">حظر</a>
+                                    {% else %}
+                                    <a href="{{ url_for('admin_user_action', user_id=user.id, action='unban') }}"
+                                        class="btn btn-sm btn-success">فك الحظر</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {{ user_edit_modal(user, departments, years, sections) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Tab -->
+    <div class="tab-pane fade" id="add-user-pane" role="tabpanel">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">إضافة حساب دكتور جديد</h6>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_create_user') }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">الاسم الأول</label>
+                            <input type="text" class="form-control" name="first_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">اسم العائلة</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">القسم</label>
+                            <select class="form-select" name="department_id" required>
+                                <option value="" selected disabled>اختر القسم...</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">اسم المادة</label>
+                            <input type="text" class="form-control" name="course_name" placeholder="مثال: ذكاء اصطناعي"
+                                required>
+                        </div>
+                        <input type="hidden" name="role" value="3">
+                    </div>
+
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">كلمة المرور</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">تأكيد كلمة المرور</label>
+                            <input type="password" class="form-control" name="confirm_password" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            إنشاء حساب دكتور
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

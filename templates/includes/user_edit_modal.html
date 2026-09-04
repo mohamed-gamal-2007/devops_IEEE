@@ -1,0 +1,76 @@
+{% macro user_edit_modal(user, departments, years, sections) %}
+<div class="modal fade" id="editUserModal-{{ user.id }}" tabindex="-1"
+    aria-labelledby="editUserModalLabel-{{ user.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="editUserModalLabel-{{ user.id }}">تعديل بيانات {{ user.full_name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_user_admin', user_id=user.id) }}">
+                <div class="modal-body text-end">
+                    <div class="mb-3">
+                        <label for="firstName-{{ user.id }}" class="form-label">الاسم الأول</label>
+                        <input type="text" class="form-control" id="firstName-{{ user.id }}" name="first_name"
+                            value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName-{{ user.id }}" class="form-label">الاسم الأخير</label>
+                        <input type="text" class="form-control" id="lastName-{{ user.id }}" name="last_name"
+                            value="{{ user.last_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email-{{ user.id }}" class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" id="email-{{ user.id }}" name="email"
+                            value="{{ user.email }}" required>
+                    </div>
+
+                    {% if user.role == 1 %}
+                    <div class="mb-3">
+                        <label for="nationalId-{{ user.id }}" class="form-label">الرقم القومي</label>
+                        <input type="text" class="form-control" id="nationalId-{{ user.id }}" name="national_id"
+                            value="{{ user.national_id or '' }}" maxlength="14">
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="dept-{{ user.id }}" class="form-label">القسم</label>
+                        <select class="form-select" id="dept-{{ user.id }}" name="department_id">
+                            <option value="">اختر القسم</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if user.department_id==dept.id %}selected{% endif %}>{{
+                                dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="year-{{ user.id }}" class="form-label">السنة الدراسية</label>
+                        <select class="form-select" id="year-{{ user.id }}" name="year_id">
+                            <option value="">اختر السنة</option>
+                            {% for year in years %}
+                            <option value="{{ year.id }}" {% if user.year_id==year.id %}selected{% endif %}>{{ year.name
+                                }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="section-{{ user.id }}" class="form-label">السكشن</label>
+                        <select class="form-select" id="section-{{ user.id }}" name="section_id">
+                            <option value="">اختر السكشن</option>
+                            {% for section in sections %}
+                            <option value="{{ section.id }}" {% if user.section_id==section.id %}selected{% endif %}>{{
+                                section.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endmacro %}

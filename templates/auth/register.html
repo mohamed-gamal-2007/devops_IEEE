@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}إنشاء حساب جديد{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header bg-secondary text-white text-center">
+                <h3 class="fw-light my-4"><i class="fas fa-user-plus me-2"></i> إنشاء حساب طالب جديد</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inputFirstName" class="form-label">الاسم الأول</label>
+                            <input class="form-control" id="inputFirstName" type="text" name="first_name" placeholder="الاسم الأول" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputLastName" class="form-label">الاسم الأخير</label>
+                            <input class="form-control" id="inputLastName" type="text" name="last_name" placeholder="الاسم الأخير" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label">البريد الإلكتروني الجامعي</label>
+                        <input class="form-control" id="inputEmail" type="email" name="email" placeholder="ادخل بريدك الإلكتروني" required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="inputNationalID" class="form-label">الرقم القومي (14 رقم)</label>
+                            <input class="form-control" id="inputNationalID" type="text" name="national_id" placeholder="14 رقم" maxlength="14" minlength="14" pattern="\d{14}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputAge" class="form-label">السن</label>
+                            <input class="form-control" id="inputAge" type="number" name="age" min="17" max="60" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputYear" class="form-label">السنة الدراسية</label>
+                            <select class="form-select" id="inputYear" name="year_id" required>
+                                <option value="">اختر السنة...</option>
+                                {% for year in years %}
+                                    <option value="{{ year.id }}">{{ year.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inputDepartment" class="form-label">القسم</label>
+                            <select class="form-select" id="inputDepartment" name="department_id" required>
+                                <option value="">اختر القسم...</option>
+                                {% for dept in departments %}
+                                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputSection" class="form-label">رقم السكشن</label>
+                            <select class="form-select" id="inputSection" name="section_id" required>
+                                <option value="">اختر السكشن...</option>
+                                {% for section in sections %}
+                                    <option value="{{ section.id }}">{{ section.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="role" value="1"> <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inputPassword" class="form-label">كلمة المرور</label>
+                            <input class="form-control" id="inputPassword" type="password" name="password" placeholder="كلمة المرور" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputPasswordConfirm" class="form-label">تأكيد كلمة المرور</label>
+                            <input class="form-control" id="inputPasswordConfirm" type="password" name="confirm_password" placeholder="تأكيد كلمة المرور" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 mb-0">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-secondary btn-block">إنشاء حساب</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <div class="small"><a href="{{ url_for('login') }}">لديك حساب بالفعل؟ اذهب لتسجيل الدخول</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<div class="modal fade" id="excuseModal" tabindex="-1" aria-labelledby="excuseModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="excuseModalLabel"><i class="fas fa-notes-medical me-2"></i> تقديم عذر غياب</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('submit_excuse') }}">
+                <div class="modal-body">
+                    <p class="text-danger small">
+                        **ملاحظة:** هذا النموذج لتقديم طلب العذر فقط. يجب تقديم الأوراق الثبوتية (مثل الروشتة أو التقرير الطبي) يدوياً للإدارة لاحقاً.
+                    </p>
+                    <div class="mb-3">
+                        <label for="excuseDate" class="form-label">تاريخ الغياب</label>
+                        <input type="date" class="form-control" id="excuseDate" name="excuse_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="excuseReason" class="form-label">سبب الغياب</label>
+                        <textarea class="form-control" id="excuseReason" name="reason" rows="4" placeholder="يرجى كتابة سبب الغياب بالتفصيل" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">إرسال العذر</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

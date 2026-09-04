@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}سجل النشاطات{% endblock %}
+
+{% block sidebar_menu %}
+    <li class="nav-item">
+        <a href="{{ url_for('super_admin_dash') }}" class="list-group-item list-group-item-action p-3">
+            <i class="fas fa-chart-line me-2"></i> الإحصائيات
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="#addDoctorCollapse" class="list-group-item list-group-item-action p-3" data-bs-toggle="collapse">
+            <i class="fas fa-user-plus me-2"></i> إضافة دكتور جديد
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ url_for('super_admin_dash') }}#userManagementTab" class="list-group-item list-group-item-action p-3">
+            <i class="fas fa-users-cog me-2"></i> إدارة المستخدمين
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ url_for('admin_logs') }}" class="list-group-item list-group-item-action p-3 active" aria-current="page">
+            <i class="fas fa-history me-2"></i> سجل النشاطات (Audit)
+        </a>
+    </li>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-file-alt me-2"></i> سجل النشاطات والرقابة</h2>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">آخر 100 نشاط في النظام</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">التاريخ والوقت</th>
+                        <th style="width: 20%;">المنفذ</th>
+                        <th style="width: 60%;">العملية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            {% if log.actor %}
+                                <span class="badge bg-primary">{{ log.actor.full_name }}</span>
+                                <span class="small text-muted">({{ log.actor.role | role_name }})</span>
+                            {% else %}
+                                <span class="badge bg-secondary">غير معروف</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ log.action }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{# دالة مساعدة لتحويل الرقم إلى اسم الدور #}
+{% macro role_name(role_id) %}
+    {% if role_id == 0 %}مسؤول عام{% elif role_id == 1 %}طالب{% elif role_id == 2 %}معيد{% elif role_id == 3 %}دكتور{% else %}غير محدد{% endif %}
+{% endmacro %}

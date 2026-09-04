@@ -1,0 +1,49 @@
+<nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+    <div class="sb-sidenav-menu">
+        <div class="nav">
+            <div class="sb-sidenav-menu-heading">الرئيسية</div>
+            <a class="nav-link" href="{{ url_for('super_admin_dash') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                لوحة التحكم (الإداري)
+            </a>
+            
+            <div class="sb-sidenav-menu-heading">الإدارة</div>
+            
+            <a class="nav-link" href="{{ url_for('activity_logs') }}">
+                <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                سجل النشاطات
+            </a>
+            
+            <a class="nav-link" href="#">
+                <div class="sb-nav-link-icon"><i class="fas fa-user-tie"></i></div>
+                إدارة الأطباء
+            </a>
+            
+            <a class="nav-link" href="#">
+                <div class="sb-nav-link-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                إدارة المساعدين
+            </a>
+            
+            <a class="nav-link" href="#">
+                <div class="sb-nav-link-icon"><i class="fas fa-user-graduate"></i></div>
+                إدارة الطلاب
+            </a>
+            
+            <div class="sb-sidenav-menu-heading">الإعدادات والمراجع</div>
+            
+            <a class="nav-link" href="#">
+                <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
+                إدارة الأقسام والسنوات
+            </a>
+            
+            <a class="nav-link" href="#">
+                <div class="sb-nav-link-icon"><i class="fas fa-comments"></i></div>
+                مراجعة الأعذار
+            </a>
+        </div>
+    </div>
+    <div class="sb-sidenav-footer">
+        <div class="small">تسجيل الدخول كـ:</div>
+        {{ current_user.full_name }} (مشرف)
+    </div>
+</nav>

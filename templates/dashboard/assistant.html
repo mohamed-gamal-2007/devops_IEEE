@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة تحكم المعيد{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="mt-4"><i class="fas fa-user-tie me-2"></i> لوحة تحكم المعيد</h1>
+<p class="lead">مرحباً بك معيد {{ current_user.full_name }}! يمكنك إدارة جلسات السكاشن الموكلة إليك.</p>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#startSessionModal" class="text-decoration-none">
+            <div class="card bg-success text-white shadow h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="h5 mb-0 font-weight-bold">بدء سكشن جديد</div>
+                            <div class="text-xs">يتم الفتح والإغلاق يدوياً</div>
+                        </div>
+                        <div class="col-4 text-end"><i class="fas fa-plus-circle fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6 mb-4">
+        <a href="#" data-bs-toggle="modal" data-bs-target="#manualAttendanceModal" class="text-decoration-none">
+            <div class="card bg-warning text-dark shadow h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <div class="h5 mb-0 font-weight-bold">تسجيل حضور يدوي</div>
+                            <div class="text-xs">إدخال بريد الطالب</div>
+                        </div>
+                        <div class="col-4 text-end"><i class="fas fa-keyboard fa-2x"></i></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i> السكاشن الحالية / الأخيرة</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>رقم الجلسة</th>
+                        <th>تاريخ البدء</th>
+                        <th>حالة الجلسة</th>
+                        <th>عدد الحضور</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session.id }}</td>
+                        <td>{{ session.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if session.is_active %}
+                            <span class="badge bg-success">قائمة</span>
+                            {% else %}
+                            <span class="badge bg-secondary">انتهت</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ session.attendance_records|length }}</td>
+                        <td>
+                            {% if session.is_active %}
+                            <a href="{{ url_for('end_session', session_id=session.id) }}" class="btn btn-sm btn-danger"
+                                title="إنهاء الجلسة" onclick="return confirm('هل أنت متأكد من إنهاء هذه الجلسة؟')">
+                                <i class="fas fa-stop-circle"></i> إنهاء
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('download_report_route', session_id=session.id) }}"
+                                class="btn btn-sm btn-outline-success" title="تحميل شيت Excel">
+                                <i class="fas fa-download"></i> تقرير
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include 'includes/session_modals.html' %}
+{% include 'includes/manual_attendance_modal.html' %}
+
+{% endblock %}

@@ -1,0 +1,94 @@
+<!-- Start Session Modal -->
+<div class="modal fade" id="startSessionModal" tabindex="-1" dir="rtl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i> بدء جلسة حضور جديدة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('start_session') }}">
+                <div class="modal-body">
+                    {% if current_user.role == 2 %}
+                    <div class="mb-3">
+                        <label class="form-label">السكشن</label>
+                        <select class="form-select" name="section_id" required>
+                            <option value="">-- اختر السكشن --</option>
+                            {% for section in sections %}
+                            <option value="{{ section.id }}">{{ section.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% else %}
+                    <input type="hidden" name="section_id" value="1">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">أقصى مسافة للطالب (بالمتر)</label>
+                        <input type="number" class="form-control" name="max_distance_meters" value="200" min="10"
+                            required>
+                    </div>
+
+                    <div id="location-info" class="mt-3 alert alert-secondary small text-center">
+                        جاري جلب موقعك...
+                    </div>
+
+                    <input type="hidden" id="creatorLat" name="creator_latitude">
+                    <input type="hidden" id="creatorLon" name="creator_longitude">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-success" id="startSessionBtn" disabled>بدء الجلسة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startSessionModal = document.getElementById('startSessionModal');
+        const locationInfo = document.getElementById('location-info');
+        const startSessionBtn = document.getElementById('startSessionBtn');
+        const creatorLat = document.getElementById('creatorLat');
+        const creatorLon = document.getElementById('creatorLon');
+
+        startSessionModal.addEventListener('shown.bs.modal', function () {
+            locationInfo.textContent = 'جاري جلب موقعك...';
+            startSessionBtn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        locationInfo.textContent = `✅ تم جلب الموقع`;
+                        locationInfo.classList.remove('alert-secondary');
+                        locationInfo.classList.add('alert-success');
+
+                        creatorLat.value = lat;
+                        creatorLon.value = lon;
+                        startSessionBtn.disabled = false;
+                    },
+                    (error) => {
+                        locationInfo.textContent = `❌ فشل جلب الموقع`;
+                        locationInfo.classList.remove('alert-secondary');
+                        locationInfo.classList.add('alert-danger');
+                        startSessionBtn.disabled = true;
+                    },
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                );
+            } else {
+                locationInfo.textContent = '❌ المتصفح لا يدعم تحديد الموقع';
+                locationInfo.classList.remove('alert-secondary');
+                locationInfo.classList.add('alert-danger');
+                startSessionBtn.disabled = true;
+            }
+        });
+
+        startSessionModal.addEventListener('hidden.bs.modal', function () {
+            locationInfo.classList.remove('alert-success', 'alert-danger');
+            locationInfo.classList.add('alert-secondary');
+        });
+    });
+</script>

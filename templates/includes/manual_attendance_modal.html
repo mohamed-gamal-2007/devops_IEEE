@@ -1,0 +1,36 @@
+<div class="modal fade" id="manualAttendanceModal" tabindex="-1" aria-labelledby="manualAttendanceModalLabel"
+    aria-hidden="true" dir="rtl">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="manualAttendanceModalLabel"><i class="fas fa-keyboard me-2"></i> تسجيل حضور
+                    يدوي</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('manual_attendance') }}">
+                <div class="modal-body">
+                    <p class="text-info small">
+                        يرجى إدخال البريد الإلكتروني للطالب المراد تسجيل حضوره يدوياً. سيتم تسجيل حالته كـ **(Manual)**.
+                    </p>
+                    <div class="mb-3">
+                        <label for="studentEmail" class="form-label">البريد الإلكتروني للطالب</label>
+                        <input type="email" class="form-control" id="studentEmail" name="student_email"
+                            placeholder="student@univ.com" required>
+                    </div>
+                    <!-- Hidden input for session_id, assuming only one active session per user context or handled by backend -->
+                    <!-- Since the user asked to delete "Choose Active Session", we assume the backend handles finding the active session or we default to the first one available in context -->
+                    {% if active_sessions_list %}
+                    <input type="hidden" name="session_id" value="{{ active_sessions_list[0].id }}">
+                    {% else %}
+                    <p class="text-danger small mt-1">لا توجد جلسات نشطة حالياً. لا يمكن تسجيل الحضور.</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning" {% if not active_sessions_list %}disabled{% endif
+                        %}><i class="fas fa-check-circle me-1"></i> تسجيل حضور يدوي</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
