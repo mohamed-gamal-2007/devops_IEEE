@@ -43,4 +43,3 @@ The application features 4 distinct user roles:
    ```bash
    git clone [https://github.com/mohamedgamal2007/flask-attendance-app.git](https://github.com/mohamedgamal2007/flask-attendance-app.git)
    cd flask-attendance-app
-##thank you IEEE
